@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Soap_HomeCredit>
-            <version>0.1.2</version>
+            <version>0.1.3</version>
         </Soap_HomeCredit>
     </modules>
     <global>
@@ -52,7 +52,27 @@
                 </observers>
             </adminhtml_widget_container_html_before>
         </events>
+        <translate>
+            <modules>
+                <Soap_HomeCredit>
+                    <files>
+                        <default>Soap_HomeCredit.csv</default>
+                    </files>
+                </Soap_HomeCredit>
+            </modules>
+        </translate>
     </adminhtml>
+    <frontend>
+        <translate>
+            <modules>
+                <Soap_HomeCredit>
+                    <files>
+                        <default>Soap_HomeCredit.csv</default>
+                    </files>
+                </Soap_HomeCredit>
+            </modules>
+        </translate>
+    </frontend>
     <admin>
         <routers>
             <adminhtml>

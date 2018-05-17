@@ -14,9 +14,9 @@ class Soap_HomeCredit_Model_Observer extends Varien_Event_Observer
         if ($block->getType() === 'adminhtml/sales_order_view') {
             $order = $block->getOrder();
             $observer->getBlock()->addButton(
-                'send_request_for_credit',
+                'send_to_home_credit',
                 array(
-                    'label' => Mage::helper('core')->__('Send Request For Credit'),
+                    'label' => Mage::helper('home_credit')->__('Send to Home Credit'),
                     'class' => 'scalable add',
                     'onclick' => 'setLocation(\'' . $observer->getBlock()->getUrl('adminhtml/credit/index') . '\')',
                 )
@@ -24,9 +24,9 @@ class Soap_HomeCredit_Model_Observer extends Varien_Event_Observer
 
             if ($order->getIsCreditRequestSent()) {
                 $observer->getBlock()->addButton(
-                    'send_request_for_check_credit_status',
+                    'check_status_home_credit',
                     array(
-                        'label' => Mage::helper('core')->__('Send Request For Check Credit Status'),
+                        'label' => Mage::helper('home_credit')->__('Check Status HomeCredit'),
                         'class' => 'scalable add',
                         'onclick' => 'setLocation(\'' . $observer->getBlock()->getUrl('adminhtml/status/index') . '\')',
                     )

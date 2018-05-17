@@ -108,7 +108,7 @@ class Soap_HomeCredit_Helper_Data extends Mage_Core_Helper_Abstract
             ),
             'APPROVED' => array(
                 'error' => false,
-                'msg' => 'Application Success',
+                'msg' => 'Application Approved',
                 'status' => Soap_HomeCredit_Model_Credit::STATUS_CREDIT_APPROVED
             ),
             'NEW/CHECK' => array(
@@ -120,6 +120,6 @@ class Soap_HomeCredit_Helper_Data extends Mage_Core_Helper_Abstract
         if (array_key_exists($sCode, $statusCodes)) {
             return $statusCodes[$sCode];
         }
-        return array('error' => true, 'msg' => 'Not available error');
+        return array('error' => true, 'msg' => 'Not available error', 'status' => '');
     }
 }

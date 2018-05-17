@@ -20,16 +20,25 @@ class Soap_HomeCredit_Model_Credit extends Mage_Payment_Model_Method_Abstract
      */
     public function assignData($data)
     {
-        $customerId = $this->getInfoInstance()->getQuote()->getCustomer()->getId();
+        
         $info = $this->getInfoInstance();
+        $customerSession = $this->_getCustomerSession();
+        $quote = $this->_getCheckoutSession()->getQuote();
         if ($data->getIiNumber()) {
-            $customer = $this->_getCustomerById($customerId);
-            if ($customer->getId() && $customer->getIiNumber() !== $data->getIiNumber()) {
-                $customer->setIiNumber($data->getIiNumber())->save();
+            $customerSession->getCustomer()->setIiNumber($data->getIiNumber());
+            $address = Mage::getModel('sales/quote_address')->load($quote->getId(), 'quote_id');
+            if ($address->getId()) {
+                $address->setIiNumber($data->getIiNumber())->save();
+                $quote->setBillingAddress($address);
+                $quote->collectTotals()->save();
             }
             $info->setIiNumber($data->getIiNumber());
         } else {
-            $ii_number = $this->_getCustomerIinById($customerId);
+            $ii_number = $customerSession->getCustomer()->getIiNumber();
+            $address = Mage::getModel('sales/quote_address')->load($quote->getId(), 'quote_id');
+            if ($address->getId()) {
+                $address->setIiNumber($ii_number)->save();
+            }
             $info->setIiNumber($ii_number);
         }
         return $this;
@@ -45,11 +54,10 @@ class Soap_HomeCredit_Model_Credit extends Mage_Payment_Model_Method_Abstract
         $info = $this->getInfoInstance();
         $errorMsg = '';
         if (!$info->getIiNumber()) {
-            $iin = $this->_getCustomerIinById($info->getMethodInstance()->getInfoInstance()->getOrder()->getCustomerId());
-            if (!$iin) {
-                $errorMsg = $this->_getHelper()->__("IIN is a required field.\n");
-            } else {
-                $info->setIiNumber($iin);
+            $customerSession = $this->_getCustomerSession();
+            $iiNumber = $customerSession->getCustomer()->getIiNumber();
+            if (!$iiNumber) {
+                $errorMsg = $this->_getHelper()->__("IIN is a required field.%n", '\n');
             }
         }
         if (!empty($errorMsg)) {
@@ -63,32 +71,22 @@ class Soap_HomeCredit_Model_Credit extends Mage_Payment_Model_Method_Abstract
      */
     public function getOrderPlaceRedirectUrl()
     {
-        return Mage::getUrl('credit/payment/gateway', array('_secure' => false));
+        return Mage::getUrl('credit/payment/gateway');
     }
 
     /**
-     * @param $customerId
-     * @return bool
+     * @return Mage_Core_Model_Abstract
      */
-    protected function _getCustomerIinById($customerId)
+    protected function _getCustomerSession()
     {
-        $customer = $this->_getCustomerById($customerId);
-        if ($customer && $iiNumber = $customer->getIiNumber()) {
-            return $iiNumber;
-        }
-        return false;
+        return Mage::getSingleton('customer/session');
     }
 
     /**
-     * @param $customerId
-     * @return bool|Mage_Customer_Model_Customer
+     * @return Mage_Checkout_Model_Session
      */
-    protected function _getCustomerById($customerId)
+    protected function _getCheckoutSession()
     {
-        if (!$customerId) {
-            return false;
-        }
-        $customer = Mage::getModel('customer/customer')->load($customerId);
-        return $customer;
+        return Mage::getSingleton('checkout/session');
     }
 }

@@ -11,7 +11,7 @@ class Soap_HomeCredit_Adminhtml_StatusController extends Mage_Adminhtml_Controll
      */
     public function indexAction()
     {
-        $orderId = $this->getRequest()->getParam('order_id');
+        $orderId = (int)$this->getRequest()->getParam('order_id');
         $order = Mage::getModel('sales/order')->load($orderId);
 
         /** @var Soap_HomeCredit_Helper_Data $_helper */
@@ -28,13 +28,13 @@ class Soap_HomeCredit_Adminhtml_StatusController extends Mage_Adminhtml_Controll
             $result = (array)$client->checkStatus($options);
             $status = $_helper->decodingStatus($result['SCODE']);
             $order->setState($status['status'], $status['status'],
-                $this->_getCreditHelper()->__($status['msg'])
+                $this->__($status['msg'])
             );
             $order->save();
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
-        $this->_redirect('*/sales_order/view', array('order_id' => $order->getId()));
+        $this->_redirect('*/sales_order/view', array('order_id' => (int)$order->getId()));
         return $this;
     }
 

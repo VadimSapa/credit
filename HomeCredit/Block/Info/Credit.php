@@ -17,7 +17,7 @@ class Soap_HomeCredit_Block_Info_Credit extends Mage_Payment_Block_Info
 
         $data = array();
         if ($this->getInfo()->getIiNumber()) {
-            $data[Mage::helper('home_credit')->__('IIN')] = $this->getInfo()->getIiNumber();
+            $data[$this->__('IIN')] = $this->getInfo()->getIiNumber();
         }
 
         $transport = parent::_prepareSpecificInformation($transport);

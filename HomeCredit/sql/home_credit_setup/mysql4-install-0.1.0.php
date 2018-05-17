@@ -6,8 +6,8 @@ $installer->addAttribute('customer', 'ii_number', array(
     'type' => 'text',
     'label' => 'II Number',
     'input' => 'text',
-    'visible' => TRUE,
-    'required' => FALSE,
+    'visible' => true,
+    'required' => false,
     'default_value' => null,
     'adminhtml_only' => '0'
 ));

@@ -5,6 +5,8 @@
  */
 class Soap_HomeCredit_PaymentController extends Mage_Core_Controller_Front_Action
 {
+    const CHECKOUT_FLAG = 'flag';
+    
     /**
      * Check Data
      */
@@ -13,11 +15,11 @@ class Soap_HomeCredit_PaymentController extends Mage_Core_Controller_Front_Actio
         $order = Mage::getSingleton('checkout/session')->getLastRealOrder();
 
         if ($order->getRealOrderId()) {
-            $arr_querystring = array(
-                'flag' => 1,
+            $arrQueryString = array(
+                self::CHECKOUT_FLAG => true,
                 'orderId' => $order->getRealOrderId()
             );
-            Mage_Core_Controller_Varien_Action::_redirect('credit/payment/response', array('_secure' => false, '_query' => $arr_querystring));
+           $this->_redirect('credit/payment/response', array('_query' => $arrQueryString));
         }
     }
 
@@ -26,15 +28,18 @@ class Soap_HomeCredit_PaymentController extends Mage_Core_Controller_Front_Actio
      */
     public function responseAction()
     {
-        if ($this->getRequest()->get("flag") == "1" && $this->getRequest()->get("orderId")) {
-            $orderId = $this->getRequest()->get("orderId");
+        if ((bool)$this->getRequest()->get(self::CHECKOUT_FLAG, false) && $orderId = $this->getRequest()->get("orderId")) {
             $order = Mage::getModel('sales/order')->loadByIncrementId($orderId);
-            $order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true, 'Payment Success.');
+            $iiNum = Mage::getModel('sales/quote_address')
+                ->load($order->getQuoteId(), 'quote_id')
+                ->getIiNumber();
+            $order->setIiNumber($iiNum);
+            $order->setState(Mage_Sales_Model_Order::STATE_PAYMENT_REVIEW, true, $this->__('Payment Success.'));
             $order->save();
             Mage::getSingleton('checkout/session')->unsQuoteId();
-            Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/success', array('_secure' => false));
+            $this->_redirect('checkout/onepage/success');
         } else {
-            Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/error', array('_secure' => false));
+            $this->_redirect('checkout/onepage/error');
         }
     }
 }

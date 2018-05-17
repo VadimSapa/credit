@@ -13,4 +13,12 @@ class Soap_HomeCredit_Block_Form_Credit extends Mage_Payment_Block_Form
         parent::_construct();
         $this->setTemplate('home-credit/form/credit.phtml');
     }
+
+    /**
+     * @return Mage_Customer_Model_Customer
+     */
+    public function getCustomer()
+    {
+        return Mage::getSingleton('customer/session')->getCustomer();
+    }
 }
